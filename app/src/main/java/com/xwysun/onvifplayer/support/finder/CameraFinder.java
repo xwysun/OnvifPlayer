@@ -17,11 +17,12 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.UUID;
 
-interface OnCameraFinderListener {
-	public void OnCameraListUpdated(CameraDevice device);
-}
-
 public class CameraFinder{
+
+	public interface OnCameraFinderListener {
+		void OnCameraListUpdated(CameraDevice device);
+	}
+
 	public static final String DISCOVERY_PROBE_TDS = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Envelope xmlns:tds=\"http://www.onvif.org/ver10/device/wsdl\" xmlns=\"http://www.w3.org/2003/05/soap-envelope\"><Header><wsa:MessageID xmlns:wsa=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\">uuid:5101931c-dd3e-4f14-a8aa-c46144af3433</wsa:MessageID><wsa:To xmlns:wsa=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\">urn:schemas-xmlsoap-org:ws:2005:04:discovery</wsa:To><wsa:Action xmlns:wsa=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\">http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe</wsa:Action></Header><Body><Probe xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns=\"http://schemas.xmlsoap.org/ws/2005/04/discovery\"><Types>dn:NetworkVideoTransmitter</Types><Scopes /></Probe></Body></Envelope>";
 	public static final int BROADCAST_SERVER_PORT = 3702;
 	public static final String TAG = "CameraFinder";
@@ -30,17 +31,20 @@ public class CameraFinder{
 	private Context mContext;
 	private boolean mIsSearching = false;
 	private OnCameraFinderListener mListener;
-	private final MutableLiveData<List<CameraDevice>> mCameraList;
-
+	private Thread workThread;
 	public CameraFinder(Context context) {
 		mContext = context;
-		mCameraList=new MutableLiveData<>();
-		mCameraList.postValue(new ArrayList<CameraDevice>());
-		new Thread(mSearchingRunnable).start();
 	}
 
-	public MutableLiveData<List<CameraDevice>> getmCameraList() {
-		return mCameraList;
+	public void start(){
+		if (workThread==null||!workThread.isAlive()){
+			workThread=new Thread(mSearchingRunnable);
+			workThread.start();
+		}
+	}
+
+	public void stop() throws InterruptedException {
+		workThread.join();
 	}
 
 	public void setOnCameraFinderListener(OnCameraFinderListener listener) {
@@ -96,25 +100,22 @@ public class CameraFinder{
 		String url = getMid(packet, "XAddrs>", "<").split(" ")[0];
 		if (uuid != null && url != null) {
 			UUID myUUID = UUID.fromString(uuid);
-			if (!isUuidExistInCameraList(myUUID)) {
-				CameraDevice cd = new CameraDevice(
-						UUID.fromString(uuid), url);
-				cd.setOnline(true);
-				mCameraList.getValue().add(cd);
-				mCameraList.postValue(mCameraList.getValue());
-			}
+			CameraDevice cd = new CameraDevice(
+					UUID.fromString(uuid), url);
+			cd.setOnline(true);
+			mListener.OnCameraListUpdated(cd);
 		}
 	}
 
-	private boolean isUuidExistInCameraList(UUID uuid) {
-		boolean result = false;
-		for (CameraDevice device : mCameraList.getValue()) {
-			if (device.uuid.equals(uuid)) {
-				result = true;
-			}
-		}
-		return result;
-	}
+//	private boolean isUuidExistInCameraList(UUID uuid) {
+//		boolean result = false;
+//		for (CameraDevice device : mCameraList.getValue()) {
+//			if (device.uuid.equals(uuid)) {
+//				result = true;
+//			}
+//		}
+//		return result;
+//	}
 
 	public String getLocalIpAddress() {
 		try {
@@ -167,8 +168,6 @@ public class CameraFinder{
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-//				mCameraList.getValue().clear();
-//				mCameraList.postValue(mCameraList.getValue());
 				byte[] buf = DISCOVERY_PROBE_TDS.getBytes();
 				try {
 					String strBroadcast = getBroadcast();

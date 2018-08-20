@@ -1,6 +1,5 @@
-package com.xwysun.onvifplayer.ui
+package com.xwysun.onvifplayer.base
 
-import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup

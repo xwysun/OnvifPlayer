@@ -1,4 +1,4 @@
-package com.xwysun.onvifplayer.ui
+package com.xwysun.onvifplayer.base
 
 import android.support.v7.app.AppCompatActivity
 import org.jetbrains.anko.AnkoLogger
