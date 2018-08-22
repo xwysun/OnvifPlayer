@@ -3,6 +3,7 @@ package com.rvirin.onvif.onvifcamera
 
 import android.os.AsyncTask
 import android.util.Log
+import com.rvirin.onvif.onvifcamera.OnvifCapabilities.Companion.capabilitiesCommand
 import com.rvirin.onvif.onvifcamera.OnvifDeviceInformation.Companion.deviceInformationCommand
 import com.rvirin.onvif.onvifcamera.OnvifDeviceInformation.Companion.deviceInformationToString
 import com.rvirin.onvif.onvifcamera.OnvifDeviceInformation.Companion.parseDeviceInformationResponse
@@ -40,6 +41,7 @@ interface OnvifListener {
 class OnvifRequest(val xmlCommand: String, val type: Type) {
 
     enum class Type {
+        GetCapabilities,
         GetServices,
         GetDeviceInformation,
         GetProfiles,
@@ -47,7 +49,7 @@ class OnvifRequest(val xmlCommand: String, val type: Type) {
 
         fun namespace(): String {
             when (this) {
-                GetServices, GetDeviceInformation -> return "http://www.onvif.org/ver10/device/wsdl"
+                GetCapabilities,GetServices, GetDeviceInformation -> return "http://www.onvif.org/ver10/device/wsdl"
                 GetProfiles, GetStreamURI -> return "http://www.onvif.org/ver20/media/wsdl"
             }
         }
@@ -63,6 +65,7 @@ class OnvifCameraPaths {
     var deviceInformation = "/onvif/device_service"
     var profiles = "/onvif/device_service"
     var streamURI = "/onvif/device_service"
+    var capabilities="/onvif/device_service"
 }
 
 /**
@@ -120,6 +123,11 @@ class OnvifDevice(val ipAddress: String, @JvmField val username: String, @JvmFie
     var mediaProfiles: List<MediaProfile> = emptyList()
 
     var rtspURI: String? = null
+
+    fun getCapabilities() {
+        val request = OnvifRequest(capabilitiesCommand, OnvifRequest.Type.GetCapabilities)
+        ONVIFcommunication().execute(request)
+    }
 
     fun getServices() {
         val request = OnvifRequest(servicesCommand, OnvifRequest.Type.GetServices)
@@ -250,6 +258,7 @@ class OnvifDevice(val ipAddress: String, @JvmField val username: String, @JvmFie
                 OnvifRequest.Type.GetDeviceInformation -> return currentDevice.paths.deviceInformation
                 OnvifRequest.Type.GetProfiles -> return currentDevice.paths.profiles
                 OnvifRequest.Type.GetStreamURI -> return currentDevice.paths.streamURI
+                OnvifRequest.Type.GetCapabilities -> return currentDevice.paths.capabilities
             }
         }
 
@@ -320,28 +329,37 @@ class OnvifDevice(val ipAddress: String, @JvmField val username: String, @JvmFie
             parsedResult = "Communication error trying to get " + result.request + ":\n\n" + result.error
 
         } else {
-            if (result.request.type == OnvifRequest.Type.GetServices) {
-                result.result?.let {
-                    parsedResult = OnvifServices.parseServicesResponse(it, currentDevice.paths)
+            when(result.request.type){
+                OnvifRequest.Type.GetServices->{
+                    result.result?.let {
+                        parsedResult = OnvifServices.parseServicesResponse(it, currentDevice.paths)
+                    }
                 }
-            } else if (result.request.type == OnvifRequest.Type.GetDeviceInformation) {
-                isConnected = true
-                if (parseDeviceInformationResponse(result.result!!, currentDevice.deviceInformation)) {
-                    parsedResult = deviceInformationToString(currentDevice.deviceInformation)
+                OnvifRequest.Type.GetDeviceInformation->{
+                    isConnected = true
+                    if (parseDeviceInformationResponse(result.result!!, currentDevice.deviceInformation)) {
+                        parsedResult = deviceInformationToString(currentDevice.deviceInformation)
+                    }
                 }
-
-            } else if (result.request.type == OnvifRequest.Type.GetProfiles) {
-                result.result?.let {
-                    val profiles = OnvifMediaProfiles.parseXML(it)
-                    currentDevice.mediaProfiles = profiles
-                    parsedResult = profiles.count().toString() + " profiles retrieved."
+                OnvifRequest.Type.GetCapabilities->{
+                    isConnected = true
+                    result.result?.let {
+                        parsedResult = OnvifCapabilities.parseCapabilitiesResponse(it, currentDevice.paths)
+                    }
                 }
-
-            } else if (result.request.type == OnvifRequest.Type.GetStreamURI) {
-                result.result?.let {
-                    val streamURI = parseStreamURIXML(it)
-                    currentDevice.rtspURI = appendCredentials(streamURI)
-                    parsedResult = "RTSP URI retrieved."
+                OnvifRequest.Type.GetProfiles->{
+                    result.result?.let {
+                        val profiles = OnvifMediaProfiles.parseXML(it)
+                        currentDevice.mediaProfiles = profiles
+                        parsedResult = profiles.count().toString() + " profiles retrieved."
+                    }
+                }
+                OnvifRequest.Type.GetStreamURI->{
+                    result.result?.let {
+                        val streamURI = parseStreamURIXML(it)
+                        currentDevice.rtspURI = appendCredentials(streamURI)
+                        parsedResult = "RTSP URI retrieved."
+                    }
                 }
             }
         }

@@ -76,7 +76,7 @@ class MainActivity : BaseActivity(), OnvifListener {
         } else {
             currentDevice = OnvifDevice(cameraDevice.serviceURL, "admin", "admin")
             currentDevice.listener = this
-            currentDevice.getServices()
+            currentDevice.getCapabilities()
         }
     }
 
@@ -88,27 +88,27 @@ class MainActivity : BaseActivity(), OnvifListener {
         if (!response.success) {
             Log.e("ERROR", "request failed: ${response.request.type} \n Response: ${response.error}")
             toast("⛔️ Request failed: ${response.request.type}")
-        }
-        // if GetServices have been completed, we request the device information
-        else if (response.request.type == OnvifRequest.Type.GetServices) {
-            currentDevice.getDeviceInformation()
-        }
-        // if GetDeviceInformation have been completed, we request the profiles
-        else if (response.request.type == OnvifRequest.Type.GetDeviceInformation) {
-            toast("Device information retrieved 👍")
-            debug { "DeviceInfo:${response.parsingUIMessage}"}
-            currentDevice.getProfiles()
-
-        }
-        // if GetProfiles have been completed, we request the Stream URI
-        else if (response.request.type == OnvifRequest.Type.GetProfiles) {
-            val profilesCount = currentDevice.mediaProfiles.count()
-            currentDevice.getStreamURI()
-            toast("$profilesCount profiles retrieved 😎")
-        }
-        // if GetStreamURI have been completed, we're ready to play the video
-        else if (response.request.type == OnvifRequest.Type.GetStreamURI) {
-            toast("Stream URI retrieved,\nready for the movie 🍿")
+        }else{
+            when(response.request.type){
+                OnvifRequest.Type.GetServices->{
+                    currentDevice.getDeviceInformation()
+                }
+                OnvifRequest.Type.GetDeviceInformation->{
+                    toast("Device information retrieved 👍")
+                    debug { "DeviceInfo:${response.parsingUIMessage}"}
+                }
+                OnvifRequest.Type.GetCapabilities->{
+                    currentDevice.getProfiles()
+                }
+                OnvifRequest.Type.GetProfiles->{
+                    val profilesCount = currentDevice.mediaProfiles.count()
+                    currentDevice.getStreamURI()
+                    toast("$profilesCount profiles retrieved 😎")
+                }
+                OnvifRequest.Type.GetStreamURI->{
+                    toast("Stream URI retrieved,\nready for the movie 🍿")
+                }
+            }
         }
     }
 
