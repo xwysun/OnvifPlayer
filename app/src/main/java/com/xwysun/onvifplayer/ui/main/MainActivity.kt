@@ -14,6 +14,7 @@ import com.xwysun.onvifplayer.base.BaseAdapter
 import com.xwysun.onvifplayer.ui.stream.RTSP_URL
 import com.xwysun.onvifplayer.ui.stream.StreamActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.dialog_login.*
 import kotlinx.android.synthetic.main.item_device.view.*
 import org.jetbrains.anko.debug
 import org.jetbrains.anko.error
@@ -32,8 +33,16 @@ class MainActivity : BaseActivity(), OnvifListener {
         view.uuid.text = device.uuid.toString()
         view.url.text = device.serviceURL.toString()
         view.setOnClickListener {
-            connect(device)
+            showLoginDialog(device)
         }
+    }
+    private fun showLoginDialog(device: CameraDevice){
+        val loginDialog=LoginDialog()
+        loginDialog.callback={
+            account,password->
+            connect(device,account,password)
+        }
+        loginDialog.show(fragmentManager,"login")
     }
 
 
@@ -61,7 +70,7 @@ class MainActivity : BaseActivity(), OnvifListener {
     }
 
 
-    private fun connect(cameraDevice: CameraDevice) {
+    private fun connect(cameraDevice: CameraDevice,account:String,password:String) {
         // If we were able to retrieve information from the camera, and if we have a rtsp uri,
         // We open StreamActivity and pass the rtsp URI
         if (currentDevice.isConnected) {
@@ -74,7 +83,7 @@ class MainActivity : BaseActivity(), OnvifListener {
                 Toast.makeText(this, "RTSP URI haven't been retrieved", Toast.LENGTH_SHORT).show()
             }
         } else {
-            currentDevice = OnvifDevice(cameraDevice.serviceURL, "admin", "admin")
+            currentDevice = OnvifDevice(cameraDevice.serviceURL, account, password)
             currentDevice.listener = this
             currentDevice.getCapabilities()
         }

@@ -145,7 +145,6 @@ class OnvifDevice(val ipAddress: String, @JvmField val username: String, @JvmFie
     }
 
     fun getStreamURI() {
-
         mediaProfiles.firstOrNull()?.let {
             val request = OnvifRequest(getStreamURICommand(it), OnvifRequest.Type.GetStreamURI)
             ONVIFcommunication().execute(request)
