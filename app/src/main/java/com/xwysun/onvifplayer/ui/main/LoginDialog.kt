@@ -22,10 +22,13 @@ class LoginDialog : DialogFragment() {
         super.onCreate(savedInstanceState)
     }
 
+    var callback :OnLoginCallback?=null
+
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view=inflater!!.inflate(R.layout.dialog_login,container,false)
         view.btnLogin.setOnClickListener {
-            login(account.text.toString(),password.text.toString())
+            callback?.onLogin(account.text.toString(),password.text.toString())
+            dismiss()
         }
         return view
     }
