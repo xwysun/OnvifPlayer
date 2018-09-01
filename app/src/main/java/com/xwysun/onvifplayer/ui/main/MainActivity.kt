@@ -60,7 +60,9 @@ class MainActivity : BaseActivity(), OnvifListener {
     private fun init(){
        mFinder.setOnCameraFinderListener {
            if (it !in mDevices) mDevices.add(it)
-           mAdapter.notifyDataSetChanged()
+           runOnUiThread {
+               mAdapter.notifyDataSetChanged()
+           }
        }
     }
 
@@ -83,7 +85,7 @@ class MainActivity : BaseActivity(), OnvifListener {
                 Toast.makeText(this, "RTSP URI haven't been retrieved", Toast.LENGTH_SHORT).show()
             }
         } else {
-            currentDevice = OnvifDevice(cameraDevice.serviceURL, account, password)
+            currentDevice = OnvifDevice("192.168.2.2:80", account, password)
             currentDevice.listener = this
             currentDevice.getCapabilities()
         }

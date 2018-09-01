@@ -17,6 +17,7 @@ import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.logging.HttpLoggingInterceptor
 import okio.Buffer
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -169,12 +170,15 @@ class OnvifDevice(val ipAddress: String, @JvmField val username: String, @JvmFie
          */
         override fun doInBackground(vararg params: OnvifRequest): OnvifResponse {
             val onvifRequest = params[0]
-
+            val loggingInterceptor = HttpLoggingInterceptor()
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
             val client = OkHttpClient.Builder()
+                    .addInterceptor(loggingInterceptor)
                     .connectTimeout(10000, TimeUnit.SECONDS)
                     .writeTimeout(100, TimeUnit.SECONDS)
                     .readTimeout(10000, TimeUnit.SECONDS)
                     .build()
+
 
             val reqBodyType = MediaType.parse("application/soap+xml; charset=utf-8;")
 
