@@ -1,6 +1,6 @@
 package com.xwysun.onvifplayer.support.finder;
 
-import android.arch.lifecycle.MutableLiveData;
+import androidx.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.util.Log;
 
@@ -12,9 +12,7 @@ import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.UUID;
 
 public class CameraFinder{

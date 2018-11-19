@@ -1,9 +1,9 @@
 package com.xwysun.onvifplayer.support.adapter
 
-import android.databinding.DataBindingUtil
-import android.databinding.ViewDataBinding
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 
@@ -97,12 +97,12 @@ class MultiAdapter<ITEM : ListItemI>(private val items: List<ITEM>,
 }
 
 
-fun <ITEM> RecyclerView.setUp(items: List<ITEM>,
-                              layoutResId: Int,
-                              initHolder: (AbstractAdapter.Holder) -> Unit = {},
-                              bindHolder: (AbstractAdapter.Holder, ITEM) -> Unit,
-                              itemClick: (ITEM) -> Unit = {},
-                              manager: RecyclerView.LayoutManager = LinearLayoutManager(this.context)
+fun <ITEM> androidx.recyclerview.widget.RecyclerView.setUp(items: List<ITEM>,
+                                                           layoutResId: Int,
+                                                           initHolder: (AbstractAdapter.Holder) -> Unit = {},
+                                                           bindHolder: (AbstractAdapter.Holder, ITEM) -> Unit,
+                                                           itemClick: (ITEM) -> Unit = {},
+                                                           manager: androidx.recyclerview.widget.RecyclerView.LayoutManager = androidx.recyclerview.widget.LinearLayoutManager(this.context)
 ): AbstractAdapter<ITEM> {
     val singleAdapter by lazy {
         SingleAdapter(items, layoutResId, { holder, _ ->
@@ -119,9 +119,9 @@ fun <ITEM> RecyclerView.setUp(items: List<ITEM>,
 }
 
 
-fun <ITEM : ListItemI> RecyclerView.setUP(items: List<ITEM>,
-                                          vararg listItems: ListItem<ITEM>,
-                                          manager: RecyclerView.LayoutManager = LinearLayoutManager(this.context)
+fun <ITEM : ListItemI> androidx.recyclerview.widget.RecyclerView.setUP(items: List<ITEM>,
+                                                                       vararg listItems: ListItem<ITEM>,
+                                                                       manager: androidx.recyclerview.widget.RecyclerView.LayoutManager = androidx.recyclerview.widget.LinearLayoutManager(this.context)
 ): AbstractAdapter<ITEM> {
 
     val multiAdapter by lazy {

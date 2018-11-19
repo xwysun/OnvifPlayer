@@ -32,9 +32,7 @@ class OnvifMediaProfiles {
                 xpp.setInput(StringReader(toParse))
                 var eventType = xpp.eventType
                 while (eventType != XmlPullParser.END_DOCUMENT) {
-
                     if (eventType == XmlPullParser.START_TAG && xpp.name == "Profiles") {
-
                         val token = xpp.getAttributeValue(null, "token")
                         xpp.nextTag()
                         if (xpp.name == "Name") {

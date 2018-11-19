@@ -1,12 +1,12 @@
 package com.xwysun.onvifplayer.base
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import org.jetbrains.anko.layoutInflater
 
 class BaseAdapter<T>(val layoutResourceId: Int, val items: List<T>, val init: (View, T) -> Unit) :
-        RecyclerView.Adapter<BaseAdapter.ViewHolder<T>>() {
+        androidx.recyclerview.widget.RecyclerView.Adapter<BaseAdapter.ViewHolder<T>>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder<T> {
         val view = parent.context.layoutInflater.inflate(layoutResourceId, parent, false)
@@ -19,7 +19,7 @@ class BaseAdapter<T>(val layoutResourceId: Int, val items: List<T>, val init: (V
 
     override fun getItemCount() = items.size
 
-    class ViewHolder<in T>(view: View, val init: (View, T) -> Unit) : RecyclerView.ViewHolder(view) {
+    class ViewHolder<in T>(view: View, val init: (View, T) -> Unit) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
         fun bindForecast(item: T) {
             with(item) {
                 init(itemView, item)

@@ -2,11 +2,13 @@ package com.xwysun.onvifplayer.ui.main
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.util.Log
 import android.widget.Toast
 import com.rvirin.onvif.onvifcamera.*
 import com.xwysun.onvifplayer.R
+import com.xwysun.onvifplayer.R.id.btn_search
+import com.xwysun.onvifplayer.R.id.rv_camera
 import com.xwysun.onvifplayer.support.finder.CameraDevice
 import com.xwysun.onvifplayer.support.finder.CameraFinder
 import com.xwysun.onvifplayer.base.BaseActivity
@@ -52,7 +54,7 @@ class MainActivity : BaseActivity(), OnvifListener {
         btn_search.setOnClickListener {
             mFinder.start()
         }
-        rv_camera.layoutManager=LinearLayoutManager(this)
+        rv_camera.layoutManager= androidx.recyclerview.widget.LinearLayoutManager(this)
         rv_camera.adapter=mAdapter
         init()
     }

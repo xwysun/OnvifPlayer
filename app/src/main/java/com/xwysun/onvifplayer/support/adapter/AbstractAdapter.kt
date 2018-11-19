@@ -1,7 +1,7 @@
 package com.xwysun.onvifplayer.support.adapter
 
-import android.support.v7.util.DiffUtil
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
 import android.util.SparseArray
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +10,7 @@ import android.view.ViewGroup
  * Created by hupihuai on 2018/7/27.
  */
 abstract class AbstractAdapter<ITEM>(protected var itemList: List<ITEM>, private val initHolder: (Holder,Int) -> Unit)
-    : RecyclerView.Adapter<AbstractAdapter.Holder>() {
+    : androidx.recyclerview.widget.RecyclerView.Adapter<AbstractAdapter.Holder>() {
 
     override fun getItemCount() = itemList.size
 
@@ -20,7 +20,7 @@ abstract class AbstractAdapter<ITEM>(protected var itemList: List<ITEM>, private
         val itemView = viewHolder.itemView
         itemView.setOnClickListener {
             val adapterPosition = viewHolder.adapterPosition
-            if (adapterPosition != RecyclerView.NO_POSITION) {
+            if (adapterPosition != androidx.recyclerview.widget.RecyclerView.NO_POSITION) {
                 onItemClick(itemView, adapterPosition)
             }
         }
@@ -63,7 +63,7 @@ abstract class AbstractAdapter<ITEM>(protected var itemList: List<ITEM>, private
 
     protected abstract fun createItemView(parent: ViewGroup, viewType: Int): View
 
-    class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class Holder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
         private val views = SparseArray<View>()
 
         fun <T : View> getView(viewId: Int): T {

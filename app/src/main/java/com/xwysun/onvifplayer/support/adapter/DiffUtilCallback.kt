@@ -1,6 +1,6 @@
 package com.xwysun.onvifplayer.support.adapter
 
-import android.support.v7.util.DiffUtil
+import androidx.recyclerview.widget.DiffUtil
 /**
  * Created by hupihuai on 2018/7/27.
  */
