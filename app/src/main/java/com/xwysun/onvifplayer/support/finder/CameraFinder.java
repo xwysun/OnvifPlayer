@@ -42,7 +42,9 @@ public class CameraFinder{
 	}
 
 	public void stop() throws InterruptedException {
-		workThread.join();
+		if (workThread!=null&&workThread.isAlive()){
+			workThread.join();
+		}
 	}
 
 	public void setOnCameraFinderListener(OnCameraFinderListener listener) {
