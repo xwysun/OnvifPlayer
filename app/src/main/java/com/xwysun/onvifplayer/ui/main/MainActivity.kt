@@ -103,13 +103,13 @@ class MainActivity : BaseActivity(), OnvifListener {
             toast("⛔️ Request failed: ${response.request.type}")
         }else{
             when(response.request.type){
-                OnvifRequest.Type.GetServices->{
-                    currentDevice.getDeviceInformation()
-                }
-                OnvifRequest.Type.GetDeviceInformation->{
-                    toast("Device information retrieved 👍")
-                    debug { "DeviceInfo:${response.parsingUIMessage}"}
-                }
+//                OnvifRequest.Type.GetServices->{
+//                    currentDevice.getDeviceInformation()
+//                }
+//                OnvifRequest.Type.GetDeviceInformation->{
+//                    toast("Device information retrieved 👍")
+//                    debug { "DeviceInfo:${response.parsingUIMessage}"}
+//                }
                 OnvifRequest.Type.GetCapabilities->{
                     currentDevice.getProfiles()
                 }

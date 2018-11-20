@@ -19,7 +19,7 @@ class OnvifMediaProfiles {
     companion object {
 
         fun getProfilesCommand(): String {
-            return "<GetProfiles xmlns=\"http://www.onvif.org/ver10/media/wsdl\"/>"
+            return "<GetProfiles xmlns=\"http://www.onvif.org/ver20/media/wsdl\"/>"
         }
 
         fun parseXML(toParse: String): List<MediaProfile> {

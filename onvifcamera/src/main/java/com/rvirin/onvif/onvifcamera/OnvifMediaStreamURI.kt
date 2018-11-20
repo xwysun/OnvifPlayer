@@ -18,10 +18,9 @@ class OnvifMediaStreamURI {
 
         fun getStreamURICommand(profile: MediaProfile): String {
 
-            return ( "<GetStreamUri xmlns=\"http://www.onvif.org/ver10/media/wsdl\">" +
-                    "<StreamSetup><Stream xmlns=\"http://www.onvif.org/ver10/schema\">RTP-Unicast</Stream>" +
-                    "<Transport xmlns=\"http://www.onvif.org/ver10/schema\"><Protocol>RTSP</Protocol></Transport>" +
-                    "</StreamSetup><ProfileToken>" +profile.token+
+            return ( "<GetStreamUri xmlns=\"http://www.onvif.org/ver20/media/wsdl\">" +
+                    "<Protocol>RTSP</Protocol>" +
+                    "<ProfileToken>" +profile.token+
                     "</ProfileToken></GetStreamUri>")
         }
 
