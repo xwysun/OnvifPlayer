@@ -47,7 +47,7 @@ dependencies {
     implementation project(':ijkplayer')
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
-    implementation 'com.github.pedroSG94.vlc-example-streamplayer:pedrovlc:2.5.14'
+//    implementation 'com.github.pedroSG94.vlc-example-streamplayer:pedrovlc:2.5.14'
 }
 kotlin {
     experimental {

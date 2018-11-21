@@ -1,14 +1,5 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/blue_active</item>
-        <item name="colorAccent">@color/blue_active</item>
-        <item name="android:windowBackground">@color/bg_white</item>
-        <item name="android:windowTranslucentStatus">true</item>
-        <!--<item name="android:windowTranslucentNavigation" tools:targetApi="kitkat">true</item>-->
-        <!--<item name="android:statusBarColor" tools:targetApi="lollipop">@color/transparent</item>-->
-    </style>
 
 </resources>

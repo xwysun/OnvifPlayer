@@ -43,7 +43,7 @@ public class CameraFinder{
 
 	public void stop() throws InterruptedException {
 		if (workThread!=null&&workThread.isAlive()){
-			workThread.join();
+			workThread.interrupt();
 		}
 	}
 

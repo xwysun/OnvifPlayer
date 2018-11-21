@@ -5,17 +5,17 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import com.rvirin.onvif.onvifcamera.*
-import com.xwysun.ijkplayer.DirectPlayActivity
 import com.xwysun.ijkplayer.MediaActivity
 import com.xwysun.onvifplayer.R
 import com.xwysun.onvifplayer.support.finder.CameraDevice
 import com.xwysun.onvifplayer.support.finder.CameraFinder
 import com.xwysun.onvifplayer.base.BaseActivity
 import com.xwysun.onvifplayer.base.BaseAdapter
-import com.xwysun.onvifplayer.ui.stream.RTSP_URL
-import com.xwysun.onvifplayer.ui.stream.StreamActivity
+//import com.xwysun.onvifplayer.ui.stream.RTSP_URL
+//import com.xwysun.onvifplayer.ui.stream.StreamActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_device.view.*
+import org.jetbrains.anko.debug
 import org.jetbrains.anko.error
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
@@ -24,7 +24,7 @@ import java.net.URL
 
 class MainActivity : BaseActivity(), OnvifListener {
 
-    private val TEST_URL="rtsp://119.39.49.116:554/ch00000090990000001075.sdp?vcdnid=001"
+    private val TEST_URL="rtsp://admin:admin@192.168.2.2:554/1/1"
     private val mFinder :CameraFinder by lazy {
         CameraFinder(this)
     }
@@ -35,6 +35,7 @@ class MainActivity : BaseActivity(), OnvifListener {
         view.uuid.text = device.uuid.toString()
         view.url.text = device.serviceURL.toString()
         view.setOnClickListener {
+//            connect(device,"admin","admin")
             showLoginDialog(device)
         }
     }
@@ -53,9 +54,6 @@ class MainActivity : BaseActivity(), OnvifListener {
         setContentView(R.layout.activity_main)
         btn_search.setOnClickListener {
             mFinder.start()
-//            val intent=Intent(this@MainActivity,DirectPlayActivity::class.java);
-//            intent.putExtra(MediaActivity.INTENT_DATA,TEST_URL)
-//            startActivity(intent)
         }
         rv_camera.layoutManager= androidx.recyclerview.widget.LinearLayoutManager(this)
         rv_camera.adapter=mAdapter
@@ -82,7 +80,7 @@ class MainActivity : BaseActivity(), OnvifListener {
         // We open StreamActivity and pass the rtsp URI
         if (currentDevice.isConnected) {
             currentDevice.rtspURI?.let { uri ->
-                val intent=Intent(this@MainActivity,MediaActivity::class.java);
+                val intent=Intent(this@MainActivity,MediaActivity::class.java)
                 intent.putExtra(MediaActivity.INTENT_DATA,uri)
                 startActivity(intent)
             } ?: run {
@@ -127,7 +125,9 @@ class MainActivity : BaseActivity(), OnvifListener {
                         Log.d("uri",uri)
                         val intent=Intent(this@MainActivity,MediaActivity::class.java);
                         intent.putExtra(MediaActivity.INTENT_DATA,uri)
-                        startActivity(intent)
+                        runOnUiThread {
+                            startActivity(intent)
+                        }
                     } ?: run {
                         Toast.makeText(this, "RTSP URI haven't been retrieved", Toast.LENGTH_SHORT).show()
                     }

@@ -4,7 +4,4 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="dim_foreground_dark">#bebebe</color>
-    <color name="bg_white">#f0f0f0</color>
-    <color name="blue_active">#2fb1ff</color>
-    <color name="grey">#999999</color>
 </resources>
