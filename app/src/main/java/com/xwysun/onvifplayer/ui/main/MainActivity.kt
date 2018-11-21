@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import com.rvirin.onvif.onvifcamera.*
+import com.xwysun.ijkplayer.DirectPlayActivity
 import com.xwysun.ijkplayer.MediaActivity
 import com.xwysun.onvifplayer.R
 import com.xwysun.onvifplayer.support.finder.CameraDevice
@@ -23,6 +24,7 @@ import java.net.URL
 
 class MainActivity : BaseActivity(), OnvifListener {
 
+    private val TEST_URL="rtsp://119.39.49.116:554/ch00000090990000001075.sdp?vcdnid=001"
     private val mFinder :CameraFinder by lazy {
         CameraFinder(this)
     }
@@ -50,7 +52,10 @@ class MainActivity : BaseActivity(), OnvifListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         btn_search.setOnClickListener {
-            mFinder.start()
+//            mFinder.start()
+            val intent=Intent(this@MainActivity,DirectPlayActivity::class.java);
+            intent.putExtra(MediaActivity.INTENT_DATA,TEST_URL)
+            startActivity(intent)
         }
         rv_camera.layoutManager= androidx.recyclerview.widget.LinearLayoutManager(this)
         rv_camera.adapter=mAdapter

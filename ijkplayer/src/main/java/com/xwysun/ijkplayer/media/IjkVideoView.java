@@ -155,15 +155,10 @@ public class IjkVideoView extends FrameLayout implements LiveController.MediaPla
             Log.d(TAG, "setFullScreen: Activity is null");
             return;
         }
-        Log.d(TAG, fullScreen?"fullscreen":"not fullscreen");
         if (fullScreen) {
-            View decorView = mActivity.getWindow().getDecorView();
-//            int option = View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
-            int option = View.SYSTEM_UI_FLAG_FULLSCREEN;;
-            decorView.setSystemUiVisibility(option);
-            mActivity.getWindow().setStatusBarColor(Color.TRANSPARENT);
             mActivity.getSupportActionBar().hide();
             mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            mActivity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
         } else {
             mActivity.getSupportActionBar().show();
             mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
