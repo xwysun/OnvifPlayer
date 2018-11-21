@@ -2,13 +2,11 @@ package com.xwysun.onvifplayer.ui.main
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.util.Log
 import android.widget.Toast
 import com.rvirin.onvif.onvifcamera.*
+import com.xwysun.ijkplayer.MediaActivity
 import com.xwysun.onvifplayer.R
-import com.xwysun.onvifplayer.R.id.btn_search
-import com.xwysun.onvifplayer.R.id.rv_camera
 import com.xwysun.onvifplayer.support.finder.CameraDevice
 import com.xwysun.onvifplayer.support.finder.CameraFinder
 import com.xwysun.onvifplayer.base.BaseActivity
@@ -16,11 +14,11 @@ import com.xwysun.onvifplayer.base.BaseAdapter
 import com.xwysun.onvifplayer.ui.stream.RTSP_URL
 import com.xwysun.onvifplayer.ui.stream.StreamActivity
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.dialog_login.*
 import kotlinx.android.synthetic.main.item_device.view.*
-import org.jetbrains.anko.debug
 import org.jetbrains.anko.error
+import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
+import java.net.URL
 
 
 class MainActivity : BaseActivity(), OnvifListener {
@@ -79,15 +77,15 @@ class MainActivity : BaseActivity(), OnvifListener {
         // We open StreamActivity and pass the rtsp URI
         if (currentDevice.isConnected) {
             currentDevice.rtspURI?.let { uri ->
-                val intent = Intent(this, StreamActivity::class.java).apply {
-                    putExtra(RTSP_URL, uri)
-                }
+                val intent=Intent(this@MainActivity,MediaActivity::class.java);
+                intent.putExtra(MediaActivity.INTENT_DATA,uri)
                 startActivity(intent)
             } ?: run {
                 Toast.makeText(this, "RTSP URI haven't been retrieved", Toast.LENGTH_SHORT).show()
             }
         } else {
-            currentDevice = OnvifDevice("192.168.2.2:80", account, password)
+            var url= URL(cameraDevice.serviceURL)
+            currentDevice = OnvifDevice(url.host, account, password)
             currentDevice.listener = this
             currentDevice.getCapabilities()
         }
@@ -120,6 +118,14 @@ class MainActivity : BaseActivity(), OnvifListener {
                 }
                 OnvifRequest.Type.GetStreamURI->{
                     toast("Stream URI retrieved,\nready for the movie 🍿")
+                    currentDevice.rtspURI?.let { uri ->
+                        Log.d("uri",uri)
+                        val intent=Intent(this@MainActivity,MediaActivity::class.java);
+                        intent.putExtra(MediaActivity.INTENT_DATA,uri)
+                        startActivity(intent)
+                    } ?: run {
+                        Toast.makeText(this, "RTSP URI haven't been retrieved", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
