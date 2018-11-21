@@ -52,10 +52,10 @@ class MainActivity : BaseActivity(), OnvifListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         btn_search.setOnClickListener {
-//            mFinder.start()
-            val intent=Intent(this@MainActivity,DirectPlayActivity::class.java);
-            intent.putExtra(MediaActivity.INTENT_DATA,TEST_URL)
-            startActivity(intent)
+            mFinder.start()
+//            val intent=Intent(this@MainActivity,DirectPlayActivity::class.java);
+//            intent.putExtra(MediaActivity.INTENT_DATA,TEST_URL)
+//            startActivity(intent)
         }
         rv_camera.layoutManager= androidx.recyclerview.widget.LinearLayoutManager(this)
         rv_camera.adapter=mAdapter

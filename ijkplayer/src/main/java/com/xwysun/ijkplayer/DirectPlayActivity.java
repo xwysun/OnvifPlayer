@@ -12,7 +12,7 @@ import cn.jzvd.JzvdStd;
 
 public class DirectPlayActivity extends AppCompatActivity {
 
-    private String TEST_URL="http://223.110.243.155/PLTV/3/224/3221225548/index.m3u8";
+    private String TEST_URL="rtsp://119.39.49.116:554/ch00000090990000001083.sdp?vcdnid=001";
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
