@@ -13,11 +13,11 @@ class HomeActivity : BaseActivity() {
 
     private val mPagerAdapter = object : PagerAdapter() {
         override fun isViewFromObject(view: View, `object`: Any): Boolean {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            return view==`object`
         }
 
         override fun getCount(): Int {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            return fragments.size
         }
 
     }
