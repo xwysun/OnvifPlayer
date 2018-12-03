@@ -32,6 +32,7 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".ui.home.HomeActivity" />
         <activity android:name="com.xwysun.ijkplayer.MediaActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             />

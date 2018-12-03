@@ -2,6 +2,8 @@ package com.xwysun.ijkplayer;
 
 import android.content.res.Configuration;
 import android.net.Uri;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
@@ -13,6 +15,7 @@ import android.widget.Toast;
 import com.xwysun.ijkplayer.media.AndroidMediaController;
 import com.xwysun.ijkplayer.media.IjkVideoView;
 
+import androidx.viewpager.widget.PagerAdapter;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
@@ -23,6 +26,7 @@ public class MediaActivity extends AppCompatActivity {
     Toolbar toolbar;
     String url;
     public static final String INTENT_DATA="rtsp";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
