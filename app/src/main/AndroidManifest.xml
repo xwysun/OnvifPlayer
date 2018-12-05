@@ -25,14 +25,16 @@
         android:theme="@style/AppTheme"
         tools:replace="android:theme">
         <activity android:name=".ui.main.MainActivity">
+
+        </activity>
+
+        <activity android:name=".ui.home.HomeActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".ui.home.HomeActivity" />
         <activity android:name="com.xwysun.ijkplayer.MediaActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             />

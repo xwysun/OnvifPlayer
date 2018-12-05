@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import androidx.fragment.app.Fragment
 import com.xwysun.onvifplayer.R
 import com.xwysun.onvifplayer.base.BaseAdapter
@@ -14,6 +15,7 @@ import kotlinx.android.synthetic.main.scan_fragment.*
 
 class ScanFragment: Fragment() {
 
+
     companion object {
         fun newInstance():ScanFragment{
             val fragment=ScanFragment()
@@ -23,16 +25,22 @@ class ScanFragment: Fragment() {
         }
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.scan_fragment,container)
+        return inflater.inflate(R.layout.scan_fragment,container,false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        btn_search.setOnClickListener {
+        initView()
+    }
 
-        }
+    private fun initView(){
+        topBar.setTitle("扫描")
         rv_camera.layoutManager= androidx.recyclerview.widget.LinearLayoutManager(context)
         rv_camera.adapter=mAdapter
+        btn_scan.setOnClickListener {
+            it.startAnimation(AnimationUtils.loadAnimation(context, R.anim.anim_rotate))
+        }
+
     }
 
     private val mDevices :MutableList<CameraDevice> = mutableListOf()
@@ -51,7 +59,7 @@ class ScanFragment: Fragment() {
             account,password->
 //            connect(device,account,password)
         }
-        loginDialog.show(fragmentManager,"login")
+//        loginDialog.show(fragmentManager,"login")
     }
 
 
