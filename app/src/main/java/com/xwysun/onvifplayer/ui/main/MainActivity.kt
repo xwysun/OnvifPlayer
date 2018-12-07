@@ -5,20 +5,18 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import com.rvirin.onvif.onvifcamera.*
-import com.xwysun.ijkplayer.DirectPlayActivity
-import com.xwysun.ijkplayer.MediaActivity
 import com.xwysun.onvifplayer.R
 import com.xwysun.onvifplayer.support.finder.CameraDevice
-import com.xwysun.onvifplayer.support.finder.CameraFinder
+import com.xwysun.onvifplayer.support.finder.OnvifFinder
 import com.xwysun.onvifplayer.base.BaseActivity
 import com.xwysun.onvifplayer.base.BaseAdapter
+import com.xwysun.onvifplayer.support.finder.CameraFinder
+import com.xwysun.onvifplayer.ui.player.DirectPlayActivity
 //import com.xwysun.onvifplayer.ui.stream.RTSP_URL
 //import com.xwysun.onvifplayer.ui.stream.StreamActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_device.view.*
-import org.jetbrains.anko.debug
 import org.jetbrains.anko.error
-import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
 import java.net.URL
 
@@ -27,7 +25,7 @@ class MainActivity : BaseActivity(), OnvifListener {
 
     private val TEST_URL="frp.1to.top:10010"
     private val mFinder :CameraFinder by lazy {
-        CameraFinder(this)
+        CameraFinder.INSTANCE
     }
 
     private val mDevices :MutableList<CameraDevice> = mutableListOf()
@@ -46,7 +44,7 @@ class MainActivity : BaseActivity(), OnvifListener {
             account,password->
             connect(device,account,password)
         }
-        loginDialog.show(fragmentManager,"login")
+        loginDialog.show(supportFragmentManager,"login")
     }
 
 
@@ -80,7 +78,7 @@ class MainActivity : BaseActivity(), OnvifListener {
         // We open StreamActivity and pass the rtsp URI
         if (currentDevice.isConnected) {
             currentDevice.rtspURI?.let { uri ->
-                val intent=Intent(this@MainActivity,DirectPlayActivity::class.java);
+                val intent=Intent(this@MainActivity, DirectPlayActivity::class.java);
                 intent.putExtra(DirectPlayActivity.INTENT_TAG,uri)
                 startActivity(intent)
             } ?: run {

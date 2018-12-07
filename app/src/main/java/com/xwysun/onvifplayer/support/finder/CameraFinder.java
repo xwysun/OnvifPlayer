@@ -15,7 +15,8 @@ import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.UUID;
 
-public class CameraFinder{
+public enum  CameraFinder{
+	INSTANCE;
 
 	public interface OnCameraFinderListener {
 		void OnCameraListUpdated(CameraDevice device);
@@ -23,15 +24,15 @@ public class CameraFinder{
 
 	public static final String DISCOVERY_PROBE_TDS = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Envelope xmlns:tds=\"http://www.onvif.org/ver10/device/wsdl\" xmlns=\"http://www.w3.org/2003/05/soap-envelope\"><Header><wsa:MessageID xmlns:wsa=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\">uuid:5101931c-dd3e-4f14-a8aa-c46144af3433</wsa:MessageID><wsa:To xmlns:wsa=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\">urn:schemas-xmlsoap-org:ws:2005:04:discovery</wsa:To><wsa:Action xmlns:wsa=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\">http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe</wsa:Action></Header><Body><Probe xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns=\"http://schemas.xmlsoap.org/ws/2005/04/discovery\"><Types>dn:NetworkVideoTransmitter</Types><Scopes /></Probe></Body></Envelope>";
 	public static final int BROADCAST_SERVER_PORT = 3702;
-	public static final String TAG = "CameraFinder";
+	public static final String TAG = "OnvifFinder";
 	private DatagramSocket mSocket;
 	private DatagramPacket mPacket;
-	private Context mContext;
 	private boolean mIsSearching = false;
 	private OnCameraFinderListener mListener;
 	private Thread workThread;
-	public CameraFinder(Context context) {
-		mContext = context;
+
+	public boolean isSearching() {
+		return mIsSearching;
 	}
 
 	public void start(){
@@ -44,6 +45,7 @@ public class CameraFinder{
 	public void stop() throws InterruptedException {
 		if (workThread!=null&&workThread.isAlive()){
 			workThread.interrupt();
+			mIsSearching=false;
 		}
 	}
 

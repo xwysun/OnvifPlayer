@@ -1,12 +1,12 @@
 package com.xwysun.onvifplayer.ui.main
 
 import android.app.Dialog
-import android.app.DialogFragment
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.DialogFragment
 import com.xwysun.onvifplayer.R
 import kotlinx.android.synthetic.main.dialog_login.*
 import kotlinx.android.synthetic.main.dialog_login.view.*
@@ -24,7 +24,7 @@ class LoginDialog : DialogFragment() {
 
     lateinit var callback:(String, String)->Unit
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view=inflater!!.inflate(R.layout.dialog_login,container,false)
         view.btnLogin.setOnClickListener {
             callback(account.text.toString(),password.text.toString())
