@@ -1,18 +1,21 @@
-package com.rvirin.onvif.onvifcamera
+package com.xwymodule.onvif
 
 
 import android.os.AsyncTask
 import android.util.Log
-import com.rvirin.onvif.onvifcamera.OnvifCapabilities.Companion.capabilitiesCommand
-import com.rvirin.onvif.onvifcamera.OnvifDeviceInformation.Companion.deviceInformationCommand
-import com.rvirin.onvif.onvifcamera.OnvifDeviceInformation.Companion.deviceInformationToString
-import com.rvirin.onvif.onvifcamera.OnvifDeviceInformation.Companion.parseDeviceInformationResponse
-import com.rvirin.onvif.onvifcamera.OnvifMediaProfiles.Companion.getProfilesCommand
-import com.rvirin.onvif.onvifcamera.OnvifMediaStreamURI.Companion.getStreamURICommand
-import com.rvirin.onvif.onvifcamera.OnvifMediaStreamURI.Companion.parseStreamURIXML
-import com.rvirin.onvif.onvifcamera.OnvifServices.Companion.servicesCommand
-import com.rvirin.onvif.onvifcamera.OnvifXMLBuilder.envelopeEnd
-import com.rvirin.onvif.onvifcamera.OnvifXMLBuilder.soapHeader
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.xwymodule.onvif.OnvifCapabilities.Companion.capabilitiesCommand
+import com.xwymodule.onvif.OnvifDeviceInformation.Companion.deviceInformationCommand
+import com.xwymodule.onvif.OnvifDeviceInformation.Companion.deviceInformationToString
+import com.xwymodule.onvif.OnvifDeviceInformation.Companion.parseDeviceInformationResponse
+import com.xwymodule.onvif.OnvifMediaProfiles.Companion.getProfilesCommand
+import com.xwymodule.onvif.OnvifMediaStreamURI.Companion.getStreamURICommand
+import com.xwymodule.onvif.OnvifMediaStreamURI.Companion.parseStreamURIXML
+import com.xwymodule.onvif.OnvifServices.Companion.servicesCommand
+import com.xwymodule.onvif.OnvifXMLBuilder.envelopeEnd
+import com.xwymodule.onvif.OnvifXMLBuilder.soapHeader
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -20,11 +23,12 @@ import okhttp3.RequestBody
 import okhttp3.logging.HttpLoggingInterceptor
 import okio.Buffer
 import java.io.IOException
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 
 @JvmField
-var currentDevice = OnvifDevice("", "", "")
+var currentDevice = OnvifDevice("", null)
 
 interface OnvifListener {
     /**
@@ -50,7 +54,7 @@ class OnvifRequest(val xmlCommand: String, val type: Type) {
 
         fun namespace(): String {
             when (this) {
-                GetCapabilities,GetServices, GetDeviceInformation -> return "http://www.onvif.org/ver10/device/wsdl"
+                GetCapabilities, GetServices, GetDeviceInformation -> return "http://www.onvif.org/ver10/device/wsdl"
                 GetProfiles, GetStreamURI -> return "http://www.onvif.org/ver20/media/wsdl"
             }
         }
@@ -111,12 +115,21 @@ class OnvifResponse(val request: OnvifRequest) {
  * @param username the username to login on the camera
  * @param password the password to login on the camera
  */
-class OnvifDevice(val ipAddress: String, @JvmField val username: String, @JvmField val password: String) {
+@Entity
+class OnvifDevice(@ColumnInfo(name = "ip")val ipAddress: String, @PrimaryKey var uuid:String?=null) {
+
+    @ColumnInfo(name = "user_name")
+    var username="admin"
+    @ColumnInfo(name = "password")
+    var password="admin"
 
     var listener: OnvifListener? = null
     /// We use this variable to know if the connection has been successful (retrieve device information)
     var isConnected = false
 
+    init {
+       uuid= uuid?: UUID.randomUUID().toString()
+    }
     private val url = "http://$ipAddress"
     private val deviceInformation = OnvifDeviceInformation()
     private val paths = OnvifCameraPaths()
@@ -124,6 +137,11 @@ class OnvifDevice(val ipAddress: String, @JvmField val username: String, @JvmFie
     var mediaProfiles: List<MediaProfile> = emptyList()
 
     var rtspURI: String? = null
+
+    fun setUserAndPwd(username: String,password: String){
+        this.username=username
+        this.password=password
+    }
 
     fun getCapabilities() {
         val request = OnvifRequest(capabilitiesCommand, OnvifRequest.Type.GetCapabilities)
@@ -333,31 +351,31 @@ class OnvifDevice(val ipAddress: String, @JvmField val username: String, @JvmFie
 
         } else {
             when(result.request.type){
-                OnvifRequest.Type.GetServices->{
+                OnvifRequest.Type.GetServices ->{
                     result.result?.let {
                         parsedResult = OnvifServices.parseServicesResponse(it, currentDevice.paths)
                     }
                 }
-                OnvifRequest.Type.GetDeviceInformation->{
+                OnvifRequest.Type.GetDeviceInformation ->{
                     isConnected = true
                     if (parseDeviceInformationResponse(result.result!!, currentDevice.deviceInformation)) {
                         parsedResult = deviceInformationToString(currentDevice.deviceInformation)
                     }
                 }
-                OnvifRequest.Type.GetCapabilities->{
+                OnvifRequest.Type.GetCapabilities ->{
                     isConnected = true
                     result.result?.let {
                         parsedResult = OnvifCapabilities.parseCapabilitiesResponse(it, currentDevice.paths)
                     }
                 }
-                OnvifRequest.Type.GetProfiles->{
+                OnvifRequest.Type.GetProfiles ->{
                     result.result?.let {
                         val profiles = OnvifMediaProfiles.parseXML(it)
                         currentDevice.mediaProfiles = profiles
                         parsedResult = profiles.count().toString() + " profiles retrieved."
                     }
                 }
-                OnvifRequest.Type.GetStreamURI->{
+                OnvifRequest.Type.GetStreamURI ->{
                     result.result?.let {
                         val streamURI = parseStreamURIXML(it)
                         currentDevice.rtspURI = appendCredentials(streamURI)

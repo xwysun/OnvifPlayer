@@ -7,29 +7,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
-import android.widget.Toast
-import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModelProviders
-import com.rvirin.onvif.onvifcamera.*
+import com.xwymodule.onvif.*
 import com.xwysun.onvifplayer.R
-import com.xwysun.onvifplayer.R.id.*
 import com.xwysun.onvifplayer.base.BaseAdapter
 import com.xwysun.onvifplayer.base.BaseFragment
-import com.xwysun.onvifplayer.support.finder.CameraDevice
 import com.xwysun.onvifplayer.ui.main.LoginDialog
 import com.xwysun.onvifplayer.ui.player.DirectPlayActivity
 import kotlinx.android.synthetic.main.item_device.view.*
 import kotlinx.android.synthetic.main.scan_fragment.*
-import org.jetbrains.anko.debug
 import org.jetbrains.anko.toast
-import java.net.URL
 
 
-class ScanFragment: BaseFragment(),OnvifListener {
+class ScanFragment: BaseFragment(), OnvifListener {
 
-    private lateinit var  model: ScanViewModel
+    private lateinit var  mViewModel: HomeViewModel
 
-    private val devices= arrayListOf<CameraDevice>()
+    private val devices= arrayListOf<OnvifDevice>()
 
     companion object {
         fun newInstance():ScanFragment{
@@ -45,15 +39,15 @@ class ScanFragment: BaseFragment(),OnvifListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        model=activity?.run {
-            ViewModelProviders.of(this).get(ScanViewModel::class.java)
+        mViewModel=activity?.run {
+            ViewModelProviders.of(this).get(HomeViewModel::class.java)
         } ?: throw Exception("Invalid Activity")
         initView()
     }
 
     override fun onPause() {
         super.onPause()
-        model.stopScan()
+        mViewModel.stopScan()
     }
 
     private fun initView(){
@@ -62,13 +56,13 @@ class ScanFragment: BaseFragment(),OnvifListener {
         rv_camera.layoutManager= androidx.recyclerview.widget.LinearLayoutManager(context)
         rv_camera.adapter=mAdapter
         btn_scan.setOnClickListener {
-            if (model.isScaning()) {
-                model.stopScan()
+            if (mViewModel.isScaning()) {
+                mViewModel.stopScan()
                 animation.cancel()
             }else{
-                if (model.startScan {
-                            if (it !in mDevices){
-                                mDevices.add(it)
+                if (mViewModel.startScan {
+                            if (it !in devices){
+                                devices.add(it)
                                 activity!!.runOnUiThread {
                                     mAdapter.notifyDataSetChanged()
                                 }
@@ -78,23 +72,22 @@ class ScanFragment: BaseFragment(),OnvifListener {
                 }
                 else{
                     activity!!.toast("设备忙，请稍后再试")
-                    model.stopScan()
+                    mViewModel.stopScan()
                     animation.cancel()
                 }
             }
         }
     }
 
-    private val mDevices :MutableList<CameraDevice> = mutableListOf()
 
-    private val mAdapter : BaseAdapter<CameraDevice> = BaseAdapter(R.layout.item_device, mDevices) { view, device ->
+    private val mAdapter : BaseAdapter<OnvifDevice> = BaseAdapter(R.layout.item_device, devices) { view, device ->
         view.uuid.text = device.uuid.toString()
-        view.url.text = device.serviceURL.toString()
+        view.url.text = device.ipAddress
         view.setOnClickListener {
             showLoginDialog(device)
         }
     }
-    private fun showLoginDialog(device: CameraDevice){
+    private fun showLoginDialog(device: OnvifDevice){
         val loginDialog= LoginDialog()
         loginDialog.callback={
             account,password->
@@ -103,9 +96,10 @@ class ScanFragment: BaseFragment(),OnvifListener {
         loginDialog.show(fragmentManager,"login")
     }
 
-    private fun connect(cameraDevice: CameraDevice,account:String,password:String) {
+    private fun connect(onvifDevice: OnvifDevice, account:String, password:String) {
         // If we were able to retrieve information from the camera, and if we have a rtsp uri,
         // We open StreamActivity and pass the rtsp URI
+        currentDevice =onvifDevice
         if (currentDevice.isConnected) {
             currentDevice.rtspURI?.let { uri ->
                 val intent= Intent(activity, DirectPlayActivity::class.java);
@@ -115,8 +109,8 @@ class ScanFragment: BaseFragment(),OnvifListener {
                 activity!!.toast("RTSP URI haven't been retrieved")
             }
         } else {
-            var url= URL(cameraDevice.serviceURL)
-            currentDevice = OnvifDevice(url.host, account, password)
+            currentDevice.username=account
+            currentDevice.password=password
             currentDevice.listener = this
             currentDevice.getCapabilities()
         }

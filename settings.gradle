@@ -1,1 +1,1 @@
-include ':app', ':onvifcamera', ':ijkplayer'
+include ':app', ':onvifcamera'

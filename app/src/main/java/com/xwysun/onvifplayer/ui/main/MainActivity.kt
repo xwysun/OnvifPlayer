@@ -4,10 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import com.rvirin.onvif.onvifcamera.*
+import com.xwymodule.onvif.*
 import com.xwysun.onvifplayer.R
 import com.xwysun.onvifplayer.support.finder.CameraDevice
-import com.xwysun.onvifplayer.support.finder.OnvifFinder
 import com.xwysun.onvifplayer.base.BaseActivity
 import com.xwysun.onvifplayer.base.BaseAdapter
 import com.xwysun.onvifplayer.support.finder.CameraFinder
@@ -85,7 +84,7 @@ class MainActivity : BaseActivity(), OnvifListener {
                 Toast.makeText(this, "RTSP URI haven't been retrieved", Toast.LENGTH_SHORT).show()
             }
         } else {
-            currentDevice = OnvifDevice(TEST_URL, "admin", "admin")
+            currentDevice = OnvifDevice(TEST_URL)
             currentDevice.listener = this
             currentDevice.getCapabilities()
         }
@@ -105,7 +104,7 @@ class MainActivity : BaseActivity(), OnvifListener {
             }
         } else {
             var url= URL(cameraDevice.serviceURL)
-            currentDevice = OnvifDevice(url.host, account, password)
+            currentDevice = OnvifDevice(url.host)
             currentDevice.listener = this
             currentDevice.getCapabilities()
         }

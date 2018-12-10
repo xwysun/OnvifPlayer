@@ -1,6 +1,7 @@
 package com.xwysun.onvifplayer.support.finder
 
 import android.util.Log
+import com.xwymodule.onvif.OnvifDevice
 import java.io.IOException
 import java.io.InterruptedIOException
 import java.net.*
@@ -12,7 +13,7 @@ import java.util.*
     private var mPacket: DatagramPacket? = null
     var isSearching = false
         private set
-    private lateinit var mListener: (CameraDevice)->Unit
+    private lateinit var mListener: (OnvifDevice)->Unit
     private var workThread: Thread? = null
 
      val DISCOVERY_PROBE_TDS = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Envelope xmlns:tds=\"http://www.onvif.org/ver10/device/wsdl\" xmlns=\"http://www.w3.org/2003/05/soap-envelope\"><Header><wsa:MessageID xmlns:wsa=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\">uuid:5101931c-dd3e-4f14-a8aa-c46144af3433</wsa:MessageID><wsa:To xmlns:wsa=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\">urn:schemas-xmlsoap-org:ws:2005:04:discovery</wsa:To><wsa:Action xmlns:wsa=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\">http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe</wsa:Action></Header><Body><Probe xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns=\"http://schemas.xmlsoap.org/ws/2005/04/discovery\"><Types>dn:NetworkVideoTransmitter</Types><Scopes /></Probe></Body></Envelope>"
@@ -102,7 +103,7 @@ import java.util.*
 
 
 
-    fun start(listener: (CameraDevice)->Unit):Boolean{
+    fun start(listener: (OnvifDevice)->Unit):Boolean{
         return if (workThread == null || !workThread!!.isAlive) {
             mListener = listener
             workThread = Thread(mSearchingRunnable)
@@ -137,11 +138,8 @@ import java.util.*
         val uuid = getMid(packet, "Address>", "<")!!.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[2]
         val url = getMid(packet, "XAddrs>", "<")!!.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0]
         if (uuid != null && url != null) {
-            val myUUID = UUID.fromString(uuid)
-            val cd = CameraDevice(
-                    UUID.fromString(uuid), url)
-            cd.isOnline = true
-            mListener(cd)
+            val onvifDevice = OnvifDevice(URL(url).host, UUID.fromString(uuid))
+            mListener(onvifDevice)
         }
     }
 

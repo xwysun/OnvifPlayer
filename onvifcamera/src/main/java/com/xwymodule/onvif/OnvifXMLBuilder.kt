@@ -1,4 +1,4 @@
-package com.rvirin.onvif.onvifcamera
+package com.xwymodule.onvif
 
 import android.annotation.SuppressLint
 import android.util.Base64.DEFAULT

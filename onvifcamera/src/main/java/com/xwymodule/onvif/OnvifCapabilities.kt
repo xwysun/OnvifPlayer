@@ -1,4 +1,4 @@
-package com.rvirin.onvif.onvifcamera
+package com.xwymodule.onvif
 
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
@@ -6,9 +6,6 @@ import org.xmlpull.v1.XmlPullParserFactory
 import java.io.IOException
 import java.io.StringReader
 
-import com.rvirin.onvif.onvifcamera.OnvifRequest.Type.GetDeviceInformation
-import com.rvirin.onvif.onvifcamera.OnvifRequest.Type.GetProfiles
-import com.rvirin.onvif.onvifcamera.OnvifRequest.Type.GetStreamURI
 import java.net.MalformedURLException
 import java.net.URL
 
@@ -16,18 +13,15 @@ import java.net.URL
  * Created by remy on 18/03/2018.
  * This class provide a parsing method for getServices command and the xml command.
  */
-class OnvifServices {
+class OnvifCapabilities {
 
     companion object {
 
-        val servicesCommand: String
+        val capabilitiesCommand: String
             get() =
-                "<GetServices xmlns=\"http://www.onvif.org/ver10/device/wsdl\">" +
-                        "<IncludeCapability>false</IncludeCapability>" +
-                        "</GetServices>"
+                "<GetCapabilities xmlns=\"http://www.onvif.org/ver10/device/wsdl\"><Category>Media</Category></GetCapabilities>"
 
-        fun parseServicesResponse(response: String, paths: OnvifCameraPaths): String {
-
+        fun parseCapabilitiesResponse(response: String, paths: OnvifCameraPaths): String {
             try {
                 val factory = XmlPullParserFactory.newInstance()
                 factory.isNamespaceAware = true
@@ -36,20 +30,11 @@ class OnvifServices {
                 var eventType = xpp.eventType
                 while (eventType != XmlPullParser.END_DOCUMENT) {
 
-                    if (eventType == XmlPullParser.START_TAG && xpp.name == "Namespace") {
+                    if (eventType == XmlPullParser.START_TAG && xpp.name == "Media") {
                         xpp.next()
-                        val currentNamespace = xpp.text
-
-                        if (currentNamespace == GetDeviceInformation.namespace()) {
-                            val uri = retrieveXAddr(xpp)
-                            paths.deviceInformation = retrievePath(uri)
-
-                        } else if (currentNamespace == GetProfiles.namespace() ||
-                                currentNamespace == GetStreamURI.namespace()) {
-                            val uri = retrieveXAddr(xpp)
-                            paths.profiles = retrievePath(uri)
-                            paths.streamURI = retrievePath(uri)
-                        }
+                        val uri = retrieveXAddr(xpp)
+                        paths.profiles = retrievePath(uri)
+                        paths.streamURI = retrievePath(uri)
                     }
 
                     eventType = xpp.next()
@@ -113,3 +98,4 @@ class OnvifServices {
         }
     }
 }
+

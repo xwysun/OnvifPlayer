@@ -1,4 +1,4 @@
-package com.rvirin.onvif.onvifcamera;
+package com.xwymodule.onvif.onvif;
 
 import org.junit.Test;
 

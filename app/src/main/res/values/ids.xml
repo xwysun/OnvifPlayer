@@ -2,4 +2,5 @@
     <item name="main_title" type="id"/>
     <item name="main_img" type="id"/>
     <item name="main_text" type="id"/>
+    <item name="add_camera" type="id"/>
 </resources>
