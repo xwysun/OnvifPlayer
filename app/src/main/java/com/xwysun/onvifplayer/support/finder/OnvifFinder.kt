@@ -138,7 +138,7 @@ import java.util.*
         val uuid = getMid(packet, "Address>", "<")!!.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[2]
         val url = getMid(packet, "XAddrs>", "<")!!.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0]
         if (uuid != null && url != null) {
-            val onvifDevice = OnvifDevice(URL(url).host, UUID.fromString(uuid))
+            val onvifDevice = OnvifDevice(URL(url).host,uuid)
             mListener(onvifDevice)
         }
     }
