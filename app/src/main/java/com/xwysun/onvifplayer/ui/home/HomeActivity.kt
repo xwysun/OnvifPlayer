@@ -7,7 +7,6 @@ import android.view.Window
 import android.view.WindowManager
 import androidx.fragment.app.Fragment
 import androidx.viewpager.widget.PagerAdapter
-import com.xwysun.onvifplayer.R
 import com.xwysun.onvifplayer.base.BaseActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentPagerAdapter
@@ -15,6 +14,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 import com.qmuiteam.qmui.widget.QMUITabSegment
 import com.qmuiteam.qmui.util.QMUIResHelper
 import com.qmuiteam.qmui.util.QMUIStatusBarHelper
+import com.xwysun.onvifplayer.R
 import kotlinx.android.synthetic.main.home_activity.*
 
 
