@@ -1,5 +1,8 @@
 apply plugin: 'com.android.library'
+
 apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 28
@@ -23,46 +26,19 @@ android {
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.0.2'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.1.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
-    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
-    implementation 'org.eclipse.ecf:org.apache.commons.codec:1.9.0.v20170208-1614'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    api fileTree(include: ['*.jar'], dir: 'libs')
+    api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    api 'androidx.appcompat:appcompat:1.0.2'
+    api 'com.squareup.okhttp3:logging-interceptor:3.10.0'
+    api 'com.squareup.okhttp3:okhttp:3.10.0'
+    api 'org.eclipse.ecf:org.apache.commons.codec:1.9.0.v20170208-1614'
     def room_version = "2.1.0-alpha03"
-    implementation "androidx.room:room-runtime:$room_version"
+    api "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
+
 }
 
-//ext {
-//    bintrayRepo = 'Maven'
-//    bintrayName = 'ONVIFCamera'
-//    orgName = 'rvi'
-//
-//    publishedGroupId = 'com.rvirin.onvif'
-//    artifact = 'onvifcamera'
-//    libraryVersion = "1.1.9"
-//
-//    libraryName = 'ONVIFCamera'
-//    libraryDescription = 'Library to ease the connection to a ONVIF Camera'
-//
-//    siteUrl = 'https://github.com/rvi/ONVIFCameraAndroid'
-//    gitUrl = 'https://github.com/rvi/ONVIFCameraAndroid.git'
-//
-//    developerId = 'rvi'
-//    developerName = 'Rémy Virin'
-//    developerEmail = 'remy@virin.us'
-//
-//    licenseName = 'The MIT License'
-//    licenseUrl = 'https://opensource.org/licenses/MIT'
-//    allLicenses = ["MIT"]
-//}
-//
-//apply from: rootProject.file('gradle/install-v1.gradle')
-//apply from: rootProject.file('gradle/bintray-android-v1.gradle')
 repositories {
     mavenCentral()
 }
+

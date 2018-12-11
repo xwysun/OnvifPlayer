@@ -3,19 +3,25 @@ package com.xwymodule.onvif
 
 import android.os.AsyncTask
 import android.util.Log
+import androidx.annotation.NonNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import com.xwymodule.onvif.OnvifCapabilities.Companion.capabilitiesCommand
-import com.xwymodule.onvif.OnvifDeviceInformation.Companion.deviceInformationCommand
-import com.xwymodule.onvif.OnvifDeviceInformation.Companion.deviceInformationToString
-import com.xwymodule.onvif.OnvifDeviceInformation.Companion.parseDeviceInformationResponse
+import com.xwymodule.onvif.service.OnvifCapabilities.Companion.capabilitiesCommand
+import com.xwymodule.onvif.service.OnvifDeviceInformation.Companion.deviceInformationCommand
+import com.xwymodule.onvif.service.OnvifDeviceInformation.Companion.deviceInformationToString
+import com.xwymodule.onvif.service.OnvifDeviceInformation.Companion.parseDeviceInformationResponse
 import com.xwymodule.onvif.OnvifMediaProfiles.Companion.getProfilesCommand
-import com.xwymodule.onvif.OnvifMediaStreamURI.Companion.getStreamURICommand
-import com.xwymodule.onvif.OnvifMediaStreamURI.Companion.parseStreamURIXML
-import com.xwymodule.onvif.OnvifServices.Companion.servicesCommand
+import com.xwymodule.onvif.service.OnvifMediaStreamURI.Companion.getStreamURICommand
+import com.xwymodule.onvif.service.OnvifMediaStreamURI.Companion.parseStreamURIXML
+import com.xwymodule.onvif.service.OnvifServices.Companion.servicesCommand
 import com.xwymodule.onvif.OnvifXMLBuilder.envelopeEnd
 import com.xwymodule.onvif.OnvifXMLBuilder.soapHeader
+import com.xwymodule.onvif.service.OnvifCapabilities
+import com.xwymodule.onvif.service.OnvifDeviceInformation
+import com.xwymodule.onvif.service.OnvifDigestInformation
+import com.xwymodule.onvif.service.OnvifServices
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -24,11 +30,12 @@ import okhttp3.logging.HttpLoggingInterceptor
 import okio.Buffer
 import java.io.IOException
 import java.util.*
+import java.util.Collections.emptyList
 import java.util.concurrent.TimeUnit
 
 
 @JvmField
-var currentDevice = OnvifDevice("", null)
+var currentDevice = OnvifDevice("")
 
 interface OnvifListener {
     /**
@@ -115,27 +122,31 @@ class OnvifResponse(val request: OnvifRequest) {
  * @param username the username to login on the camera
  * @param password the password to login on the camera
  */
-@Entity
-class OnvifDevice(@ColumnInfo(name = "ip")val ipAddress: String, @PrimaryKey var uuid:String?=null) {
+@Entity(tableName = "onvif")
+class OnvifDevice(@ColumnInfo(name = "ip")val ipAddress: String, @PrimaryKey val uuid:String=UUID.randomUUID().toString()) {
 
     @ColumnInfo(name = "user_name")
     var username="admin"
     @ColumnInfo(name = "password")
     var password="admin"
 
+    @Ignore
     var listener: OnvifListener? = null
     /// We use this variable to know if the connection has been successful (retrieve device information)
+    @Ignore
     var isConnected = false
 
-    init {
-       uuid= uuid?: UUID.randomUUID().toString()
-    }
+    @Ignore
     private val url = "http://$ipAddress"
+    @Ignore
     private val deviceInformation = OnvifDeviceInformation()
+    @Ignore
     private val paths = OnvifCameraPaths()
 
+    @Ignore
     var mediaProfiles: List<MediaProfile> = emptyList()
 
+    @Ignore
     var rtspURI: String? = null
 
     fun setUserAndPwd(username: String,password: String){
@@ -387,4 +398,24 @@ class OnvifDevice(@ColumnInfo(name = "ip")val ipAddress: String, @PrimaryKey var
 
         return parsedResult
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as OnvifDevice
+
+        if (ipAddress != other.ipAddress) return false
+        if (uuid != other.uuid) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = ipAddress.hashCode()
+        result = 31 * result + (uuid?.hashCode() ?: 0)
+        return result
+    }
+
+
 }
