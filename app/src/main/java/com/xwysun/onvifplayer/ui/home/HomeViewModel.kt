@@ -6,7 +6,6 @@ import com.xwymodule.onvif.db.OnvifDao
 import com.xwymodule.onvif.db.OnvifDatabase
 import com.xwymodule.onvif.finder.OnvifFinder
 import com.xwysun.onvifplayer.app.App
-import kotlinx.coroutines.experimental.async
 
 class HomeViewModel:ViewModel() {
 

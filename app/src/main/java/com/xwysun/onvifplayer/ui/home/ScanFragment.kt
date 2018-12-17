@@ -12,11 +12,12 @@ import com.xwymodule.onvif.*
 import com.xwysun.onvifplayer.R
 import com.xwysun.onvifplayer.base.BaseAdapter
 import com.xwysun.onvifplayer.base.BaseFragment
+import com.xwysun.onvifplayer.support.adapter.toast
 import com.xwysun.onvifplayer.ui.main.LoginDialog
 import com.xwysun.onvifplayer.ui.player.DirectPlayActivity
 import kotlinx.android.synthetic.main.item_device.view.*
 import kotlinx.android.synthetic.main.scan_fragment.*
-import org.jetbrains.anko.toast
+
 
 
 class ScanFragment: BaseFragment(), OnvifListener {
@@ -71,7 +72,7 @@ class ScanFragment: BaseFragment(), OnvifListener {
                     it.startAnimation(animation)
                 }
                 else{
-                    activity!!.toast("设备忙，请稍后再试")
+                    toast("设备忙，请稍后再试")
                     mViewModel.stopScan()
                     animation.cancel()
                 }
@@ -106,7 +107,7 @@ class ScanFragment: BaseFragment(), OnvifListener {
                 intent.putExtra(DirectPlayActivity.INTENT_TAG,uri)
                 startActivity(intent)
             } ?: run {
-                activity!!.toast("RTSP URI haven't been retrieved")
+                toast("RTSP URI haven't been retrieved")
             }
         } else {
             currentDevice.username=account
@@ -123,7 +124,7 @@ class ScanFragment: BaseFragment(), OnvifListener {
 
         if (!response.success) {
             Log.e("ERROR", "request failed: ${response.request.type} \n Response: ${response.error}")
-            activity!!.toast("⛔️ Request failed: ${response.request.type}")
+            toast("⛔️ Request failed: ${response.request.type}")
         }else{
             when(response.request.type){
 //                OnvifRequest.Type.GetServices->{
@@ -139,17 +140,17 @@ class ScanFragment: BaseFragment(), OnvifListener {
                 OnvifRequest.Type.GetProfiles->{
                     val profilesCount = currentDevice.mediaProfiles.count()
                     currentDevice.getStreamURI()
-                    activity!!.toast("$profilesCount profiles retrieved 😎")
+                    toast("$profilesCount profiles retrieved 😎")
                 }
                 OnvifRequest.Type.GetStreamURI->{
-                    activity!!.toast("Stream URI retrieved,\nready for the movie 🍿")
+                    toast("Stream URI retrieved,\nready for the movie 🍿")
                     currentDevice.rtspURI?.let { uri ->
                         Log.d("uri",uri)
                         val intent= Intent(activity, DirectPlayActivity::class.java);
                         intent.putExtra(DirectPlayActivity.INTENT_TAG,uri)
                         startActivity(intent)
                     } ?: run {
-                        activity!!.toast("RTSP URI haven't been retrieved")
+                        toast("RTSP URI haven't been retrieved")
                     }
                 }
             }

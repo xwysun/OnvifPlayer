@@ -2,6 +2,7 @@ package com.xwysun.onvifplayer.ui.home
 
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Contacts
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,17 +13,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.xwymodule.onvif.*
 import com.xwysun.onvifplayer.R
 import com.xwysun.onvifplayer.base.BaseAdapter
+import com.xwysun.onvifplayer.support.adapter.inflate
+import com.xwysun.onvifplayer.support.adapter.logd
+import com.xwysun.onvifplayer.support.adapter.toast
 import com.xwysun.onvifplayer.ui.main.CreateDeviceDialog
 import com.xwysun.onvifplayer.ui.player.DirectPlayActivity
 import kotlinx.android.synthetic.main.item_device.view.*
 import kotlinx.android.synthetic.main.saved_fragment.*
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.CoroutineStart
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.launch
-import org.jetbrains.anko.custom.async
-import org.jetbrains.anko.toast
+import kotlinx.coroutines.*
+
 
 class SavedFragment :Fragment(), OnvifListener {
 
@@ -34,7 +33,7 @@ class SavedFragment :Fragment(), OnvifListener {
         view.uuid.text = device.uuid.toString()
         view.url.text = device.ipAddress
         view.setOnClickListener {
-           connect(device)
+            connect(device)
         }
     }
 
@@ -47,7 +46,7 @@ class SavedFragment :Fragment(), OnvifListener {
         }
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.saved_fragment,container,false)
+        return container!!.inflate(R.layout.saved_fragment)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -79,15 +78,15 @@ class SavedFragment :Fragment(), OnvifListener {
         refreshData()
     }
 
-    private fun showAddDialog(){
+    private fun showAddDialog()= runBlocking{
         val createDeviceDialog= CreateDeviceDialog()
         createDeviceDialog.callback={
             ip,account,password->
             val onvifDevice=OnvifDevice(ip)
             onvifDevice.username=account
             onvifDevice.password=password
-            launch(UI){
-                val task= async(CommonPool){
+            launch(){
+                val task= async(Dispatchers.IO){
                     mViewModel.saveOnvifDevice(onvifDevice)
                 }
                 task.await()
@@ -97,8 +96,8 @@ class SavedFragment :Fragment(), OnvifListener {
         createDeviceDialog.show(fragmentManager,"login")
     }
 
-    private fun refreshData()= launch(UI){
-        val task= async(CommonPool){
+    private fun refreshData()= GlobalScope.launch(Dispatchers.Main){
+        val task= async(Dispatchers.IO){
             devices.clear()
             devices.addAll(mViewModel.loadSavedDevices()!!)
         }
@@ -117,7 +116,7 @@ class SavedFragment :Fragment(), OnvifListener {
                 intent.putExtra(DirectPlayActivity.INTENT_TAG,uri)
                 startActivity(intent)
             } ?: run {
-                activity!!.toast("RTSP URI haven't been retrieved")
+                toast("RTSP URI haven't been retrieved")
             }
         } else {
             currentDevice.listener = this
@@ -128,11 +127,11 @@ class SavedFragment :Fragment(), OnvifListener {
 
     override fun requestPerformed(response: OnvifResponse) {
 
-        Log.d("INFO", response.parsingUIMessage)
+        logd(response.parsingUIMessage)
 
         if (!response.success) {
             Log.e("ERROR", "request failed: ${response.request.type} \n Response: ${response.error}")
-            activity!!.toast("⛔️ Request failed: ${response.request.type}")
+            toast("⛔️ Request failed: ${response.request.type}")
         }else{
             when(response.request.type){
 //                OnvifRequest.Type.GetServices->{
@@ -148,17 +147,17 @@ class SavedFragment :Fragment(), OnvifListener {
                 OnvifRequest.Type.GetProfiles->{
                     val profilesCount = currentDevice.mediaProfiles.count()
                     currentDevice.getStreamURI()
-                    activity!!.toast("$profilesCount profiles retrieved 😎")
+                    toast("$profilesCount profiles retrieved 😎")
                 }
                 OnvifRequest.Type.GetStreamURI->{
-                    activity!!.toast("Stream URI retrieved,\nready for the movie 🍿")
+                    toast("Stream URI retrieved,\nready for the movie 🍿")
                     currentDevice.rtspURI?.let { uri ->
                         Log.d("uri",uri)
                         val intent= Intent(activity, DirectPlayActivity::class.java);
                         intent.putExtra(DirectPlayActivity.INTENT_TAG,uri)
                         startActivity(intent)
                     } ?: run {
-                        activity!!.toast("RTSP URI haven't been retrieved")
+                        toast("RTSP URI haven't been retrieved")
                     }
                 }
             }

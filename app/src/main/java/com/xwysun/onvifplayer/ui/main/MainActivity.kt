@@ -9,14 +9,13 @@ import com.xwysun.onvifplayer.R
 import com.xwysun.onvifplayer.support.finder.CameraDevice
 import com.xwysun.onvifplayer.base.BaseActivity
 import com.xwysun.onvifplayer.base.BaseAdapter
+import com.xwysun.onvifplayer.support.adapter.toast
 import com.xwysun.onvifplayer.support.finder.CameraFinder
 import com.xwysun.onvifplayer.ui.player.DirectPlayActivity
 //import com.xwysun.onvifplayer.ui.stream.RTSP_URL
 //import com.xwysun.onvifplayer.ui.stream.StreamActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_device.view.*
-import org.jetbrains.anko.error
-import org.jetbrains.anko.toast
 import java.net.URL
 
 
