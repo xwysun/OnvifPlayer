@@ -18,6 +18,7 @@ import com.xwysun.onvifplayer.support.adapter.logd
 import com.xwysun.onvifplayer.support.adapter.toast
 import com.xwysun.onvifplayer.ui.main.CreateDeviceDialog
 import com.xwysun.onvifplayer.ui.player.DirectPlayActivity
+import com.xwysun.onvifplayer.ui.player.PlayActivity
 import kotlinx.android.synthetic.main.item_device.view.*
 import kotlinx.android.synthetic.main.saved_fragment.*
 import kotlinx.coroutines.*
@@ -112,8 +113,8 @@ class SavedFragment :Fragment(), OnvifListener {
         currentDevice =onvifDevice
         if (currentDevice.isConnected) {
             currentDevice.rtspURI?.let { uri ->
-                val intent= Intent(activity, DirectPlayActivity::class.java);
-                intent.putExtra(DirectPlayActivity.INTENT_TAG,uri)
+                val intent= Intent(activity, PlayActivity::class.java);
+                intent.putExtra(PlayActivity.INTENT_TAG,uri)
                 startActivity(intent)
             } ?: run {
                 toast("RTSP URI haven't been retrieved")
@@ -153,8 +154,8 @@ class SavedFragment :Fragment(), OnvifListener {
                     toast("Stream URI retrieved,\nready for the movie 🍿")
                     currentDevice.rtspURI?.let { uri ->
                         Log.d("uri",uri)
-                        val intent= Intent(activity, DirectPlayActivity::class.java);
-                        intent.putExtra(DirectPlayActivity.INTENT_TAG,uri)
+                        val intent= Intent(activity, PlayActivity::class.java);
+                        intent.putExtra(PlayActivity.INTENT_TAG,uri)
                         startActivity(intent)
                     } ?: run {
                         toast("RTSP URI haven't been retrieved")

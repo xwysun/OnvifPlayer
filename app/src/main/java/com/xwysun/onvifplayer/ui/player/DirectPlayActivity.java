@@ -22,6 +22,7 @@ public class DirectPlayActivity extends AppCompatActivity {
         setContentView(R.layout.directly_play_activity);
         url=getIntent().getStringExtra(INTENT_TAG);
         JzvdStd.setMediaInterface(new JZMediaIjkplayer());
+        JzvdStd.startFullscreen(this, JzvdStd.class, url, null);
     }
 
     @Override
